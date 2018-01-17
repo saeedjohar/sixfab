@@ -1,6 +1,7 @@
 #import libraries
 from enum import Enum
 from .ADS1x15 import ADS1015
+import SDL_Pi_HDC1000
 import time
 import RPi.GPIO as GPIO
 import serial
@@ -16,7 +17,7 @@ port = "/dev/ttyS0"
 
 GPIO.setup(statusPin, GPIO.IN)
 GPIO.setup(power_key, GPIO.OUT)
-
+hdc = SDL_Pi_HDC1000.SDL_Pi_HDC1000()
 
 class switchStatus(Enum):
     OFF = False
@@ -34,9 +35,14 @@ class opto(Enum):
 #defining 
 def lux():
     adc = ADS1015(address=0x49, busnum=1)
-    rawLux=adc.read_adc(2,gain=1)
+    rawLux=adc.read_adc(0,gain=1)
     lux = rawLux*100/1580
     return lux
+def temperature():
+    print "Temperature = %3.1f C" % hdc.readTemperature()
+
+def humidity():    
+    print "Humidity  %3.1f %%" % hdc.readHumidity()
 
 def relay(relayNumber,switchStatus):
     GPIO.setup(relayNumber, GPIO.OUT)
