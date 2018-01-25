@@ -36,7 +36,7 @@ class opto(Enum):
 def lux():
     #adc = ADS1015(address=0x49, busnum=1)
     #rawLux=adc.read_adc(0,gain=1)
-    rawLux = adc(2)    
+    rawLux = adc(0)    
     lux = rawLux*100/1580
     return lux
 def temperature():
