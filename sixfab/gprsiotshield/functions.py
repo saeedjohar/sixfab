@@ -12,7 +12,12 @@ GPIO.setwarnings(False)
 ##-----setting pin------
 statusPin = 13
 power_key = 12
-
+relay1 = 21
+relay2 = 26
+luxChannel = 0
+opto1 = 20
+opto2 = 19
+    
 port = "/dev/ttyS0"
 
 GPIO.setup(statusPin, GPIO.IN)
@@ -23,9 +28,7 @@ class switchStatus(Enum):
     OFF = False
     ON = True
 
-class relayNumber(Enum):
-    relay1 = 21
-    relay2 = 26
+
 
 class opto(Enum):
     opto1 = 20
@@ -34,9 +37,7 @@ class opto(Enum):
 #defining 
 
 def lux():
-    #adc = ADS1015(address=0x49, busnum=1)
-    #rawLux=adc.read_adc(0,gain=1)
-    rawLux = adc(0)    
+    rawLux = adc(luxChannel)    
     lux = rawLux*100/1580
     return lux
 def temperature():
@@ -45,10 +46,15 @@ def temperature():
 def humidity():    
     return hdc.readHumidity()
 
-def relay(relayNumber,switchStatus):
-    GPIO.setup(relayNumber, GPIO.OUT)
-    GPIO.output(relayNumber, switchStatus)
-    time.sleep(1)
+def relay(relayNumber,status):
+    assert ( (relayNumber == 1) or (relayNumber == 2) ), "Only use 1 or 2 for relayNumber"
+    assert ( (status == 0) or (status == 1) ), "Only use 0 or 1 for status"
+    if relayNumber == 1:
+	pin = relay1
+    if relayNumber == 2:
+	pin = relay2
+    GPIO.setup(pin, GPIO.OUT)
+    return GPIO.output(pin, status)
 
 
 def status():
@@ -89,10 +95,11 @@ def adc(channelNumber):
     adcValues[channelNumber] = adc.read_adc(channelNumber, gain=1)
     return adcValues[channelNumber]
 
-def optoRead(opto):
-    GPIO.setup(opto, GPIO.IN)
-    optoReading = GPIO.input(opto)
-    if (optoReading==optoRead.HIGH):
-        return "LOW"
-    elif():
-        return "HIGH"
+def optoRead(optoNumber):
+    assert ( (optoNumber == 1) or (optoNumber == 2) ), "Only use 1 or 2 for pinNumber"
+    if optoNumber == 1:
+        pin = opto1
+    if optoNumber == 2:
+	pin = opto2
+    GPIO.setup(pin, GPIO.IN)
+    return GPIO.input(pin)
