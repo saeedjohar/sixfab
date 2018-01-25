@@ -4,7 +4,7 @@ from enum import Enum
 import RPi.GPIO as GPIO
 from .ADS1x15 import ADS1015
 import SDL_Pi_HDC1000
-from mpu6050 import mpu6050
+import MMA8452Q
 
 import os
 import glob
@@ -12,10 +12,6 @@ import time
 
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
-
-base_dir = '/sys/bus/w1/devices/'
-device_folder = glob.glob(base_dir + '28*')[0]
-device_file = device_folder + '/w1_slave'
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
@@ -84,6 +80,11 @@ def readAdc(channelNumber):
 
 	return adcValues[channelNumber]
 
+def readAcc():
+        mma = MMA8452Q.MMA8452Q()
+        return mma.readAcc()
+    
+
 def temp():
 
 	hdc1000 = SDL_Pi_HDC1000.SDL_Pi_HDC1000()
@@ -112,6 +113,10 @@ def getGyro():
 
 
 def read_ds18b20_raw():
+
+    base_dir = '/sys/bus/w1/devices/'
+    device_folder = glob.glob(base_dir + '28*')[0]
+    device_file = device_folder + '/w1_slave'
     f = open(device_file, 'r')
     lines = f.readlines()
     f.close()

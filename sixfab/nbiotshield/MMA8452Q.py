@@ -25,10 +25,10 @@ import time
 
 #time.sleep(0.5)
 
-
-class MMA8452:
+class MMA8452Q:
     
-    def _init__(self):
+    def __init__(self):
+        
         # Get I2C bus
         self.bus = smbus.SMBus(1)        
         # MMA8452Q address, 0x1C(28)
@@ -51,8 +51,8 @@ class MMA8452:
 
 
 
-    def readAcc():
-        data = MMA8452.bus.read_i2c_block_data(0x1C, 0x00, 7)
+    def readAcc(self):
+        data = self.bus.read_i2c_block_data(0x1C, 0x00, 7)
 
         xAccl = (data[1] * 256 + data[2]) / 16
         if xAccl > 2047 :

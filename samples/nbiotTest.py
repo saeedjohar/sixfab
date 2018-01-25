@@ -1,4 +1,4 @@
-import sixfab_iotshield as sixfab
+import sixfab.nbiotshield as sixfab
 import time
 from threading import Timer
 import urllib2
@@ -56,25 +56,7 @@ while 1:
 	print "Lux Value is : %d" % s_lux
 	
 	s_ds18b20temp = sixfab.read_ds18b20()[0]
-	print "DS18b20 Temp Value is : %d" % s_ds18b20temp
-	
-	s_accelX = sixfab.getAccel()["x"]
-	print "Accel X Value is : %d" % s_accelX
-	
-	s_accelY = sixfab.getAccel()["y"]
-	print "Accel Y Value is : %d" % s_accelY
-	
-	s_accelZ = sixfab.getAccel()["z"]
-	print "Accel Z Value is : %d" % s_accelZ
-	
-	s_gyroX = sixfab.getGyro()["x"]
-	print "Gyro X Value is : %d" % s_gyroX
-	
-	s_gyroY = sixfab.getGyro()["y"]
-	print "Gyro Y Value is : %d" % s_gyroY
-	
-	s_gyroZ = sixfab.getGyro()["z"]
-	print "Gyro Z Value is : %d" % s_gyroZ
+	print "DS18b20 Temp Value is : %d" % s_ds18b20temp	
 	
 	s_adc0 = sixfab.readAdc(0)
 	print "Adc0 : %d" % s_adc0
@@ -87,6 +69,9 @@ while 1:
 	
 	s_adc3 = sixfab.readAdc(3)
 	print "Adc3 : %d" % s_adc3
+	
+	s_acc = sixfab.readAcc()
+	print ("Acc : %d %d %d" % ( s_acc["x"] , s_acc["y"] ,s_acc["z"] ))
 	
 	for i in range(0,20):
 		wait()
