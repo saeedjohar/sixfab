@@ -39,10 +39,10 @@ def lux():
     lux = rawLux*100/1580
     return lux
 def temperature():
-    print "Temperature = %3.1f C" % hdc.readTemperature()
+    return hdc.readTemperature()
 
 def humidity():    
-    print "Humidity  %3.1f %%" % hdc.readHumidity()
+    return hdc.readHumidity()
 
 def relay(relayNumber,switchStatus):
     GPIO.setup(relayNumber, GPIO.OUT)
