@@ -3,20 +3,141 @@ import time
 from threading import Timer
 import urllib2
 import datetime
-
-myAPI = "2OY298JEVZOJZ9EN"
+import serial
 
 
 relayCounter = 0
 stateRelay = False
 
+ser = serial.Serial(
+    port='/dev/ttyS0',
+    baudrate=9600,
+    parity=serial.PARITY_NONE,
+    stopbits=serial.STOPBITS_ONE,
+    bytesize=serial.EIGHTBITS
+)
+
+
 def wait():
 	sixfab.toggleLed()
 	time.sleep(0.3)
-
-baseURL = 'https://api.thingspeak.com/update?api_key=%s' % myAPI
-print baseURL
 	
+while 1:
+
+	ser.reset_input_buffer()
+
+	while 1:
+		ser.write("ATE0\r")
+		time.sleep(1)
+		response = ser.readline()
+		response = ser.readline()
+		print 'RESPONSE:%s' % response
+		
+		if response.startswith('OK'):
+			break
+			
+	print 'TAMAMLANDI 0'
+	ser.reset_input_buffer()
+	
+	while 1:
+		ser.write("AT+CFUN=1\r")
+		time.sleep(1)
+		response = ser.readline()		
+		response = ser.readline()
+		print 'RESPONSE:%s' % response
+		
+		if response.startswith('OK'):
+			break
+			
+	print 'TAMAMLANDI 1'
+	
+	ser.reset_input_buffer()
+	
+	
+
+	while 1:
+		ser.write("AT+CGATT=1\r")
+		time.sleep(0.5)
+		
+		response = ser.readline()		
+		response = ser.readline()
+		print 'RESPONSE:%s' % response
+		
+		if response.startswith('OK'):
+			break
+			
+		
+	
+	print 'TAMAMLANDI 2'
+	
+	ser.reset_input_buffer()
+	
+	
+	while 1:
+		ser.write("AT+CGDCONT=1,\"IP\",\"IOTTEST\"\r")
+		time.sleep(1)
+		
+		response = ser.readline()		
+		response = ser.readline()
+		print 'RESPONSE:%s' % response
+		
+		if response.startswith('OK'):
+			break
+			
+
+	print 'TAMAMLANDI 3'
+	
+	time.sleep(3)
+	
+	ser.reset_input_buffer()
+	
+	while 1:
+		ser.write("AT+CGATT?\r")
+		time.sleep(1)
+		
+		
+		while 1:
+			ser.write("AT+CGATT?\r")
+			time.sleep(1)
+			response = ser.readline()
+			response = ser.readline()
+			print 'RESPONSE:%s' % response
+		
+			if response.startswith('+CGATT:1'):
+				break
+			
+		break
+
+	print 'TAMAMLANDI 4'
+	
+	ser.write('AT+NSOCL=0\r')
+	time.sleep(1)
+	
+	ser.reset_input_buffer()
+	
+	while 1:
+		ser.write("AT+NSOCR=DGRAM,17,3005,1\r")
+		time.sleep(0.5)
+		
+		
+		while 1:
+			response = ser.readline()
+			response = ser.readline()
+			print 'RESPONSE:%s' % response
+		
+			if response.startswith('OK'):
+				break
+				
+			if response.startswith('ERROR'):
+				ser.write("AT+NSOCR=DGRAM,17,3005,1\r")
+			
+		break
+
+	print 'TAMAMLANDI 5'
+	
+	break
+
+
 while 1:
 
 	relayCounter += 1
@@ -73,20 +194,27 @@ while 1:
 	s_acc = sixfab.readAcc()
 	print ("Acc : %d %d %d" % ( s_acc["x"] , s_acc["y"] ,s_acc["z"] ))
 	
-	for i in range(0,20):
+	for i in range(0,200):
 		wait()
-	
 		
 	now = datetime.datetime.now()
 	print str(now)
 	
-	for x in range(0, 3):
-		try:
-			f = urllib2.urlopen(baseURL + "&field1=%d&field2=%d&field3=%d&field4=%d&field5=%d&field6=%d&field7=%d&field8=%d" % (s_hdctemp, s_humidity, s_lux, s_ds18b20temp, s_accelX, s_gyroX, s_adc1, s_opto1))
-			print f.read()
-			f.close()
-			print "send ok"
-			break
-		except:
-			print "problem while sending"
+	data = '{{"_0":{0}, "_1":{1}, "_2":{2}, "_3":{3}, "_4":{4} , "_5":{5} , "_6":{6} , "_7":{7}}}'.format(s_hdctemp, s_humidity, s_lux, s_ds18b20temp, s_acc["x"], s_acc["y"], s_adc1, s_opto1) 
+	
+	print data
+		
+        print 'DATA SENDING'
+        
+        data ='AT+NSOST=0,104.236.216.61,2223,{0},{1}\r'.format(str(len(data)),data.encode("hex"))
+        
+        ser.reset_input_buffer()
+		
+        ser.write(data)
+        
+        response = ser.readline()
+        response = ser.readline()
+        print 'RESPONSE:%s' % response
+
+
 	
