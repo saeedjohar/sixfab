@@ -193,9 +193,6 @@ while 1:
 	
 	s_acc = sixfab.readAcc()
 	print ("Acc : %d %d %d" % ( s_acc["x"] , s_acc["y"] ,s_acc["z"] ))
-	
-	for i in range(0,200):
-		wait()
 		
 	now = datetime.datetime.now()
 	print str(now)
@@ -215,6 +212,9 @@ while 1:
         response = ser.readline()
         response = ser.readline()
         print 'RESPONSE:%s' % response
+        
+        for i in range(0,200):
+            wait()
 
 
 	
