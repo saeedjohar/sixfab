@@ -63,6 +63,7 @@ def readOpto(optoNumber):
 	if optoNumber == 2:
 		pin = OPTO2_PIN
 
+        GPIO.setup(pin, GPIO.OUT)
 	GPIO.setup(pin, GPIO.IN)
 
 	return GPIO.input(pin)
